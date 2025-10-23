@@ -59,64 +59,67 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
 
-    if (_nameController.text.isNotEmpty && _nameController.text.contains(RegExp(r'[0-9]'))) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Name cannot contain numbers'),
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.red,
-        ),
-      );
+    if (_nameController.text.isNotEmpty && _hasNumbers(_nameController.text)) {
+      _showSnackBar('Name cannot contain numbers', isError: true);
     }
   }
 
+  bool _hasNumbers(String text) {
+    return text.contains(RegExp(r'[0-9]'));
+  }
+
   void _validateName(String name) {
-    if (name.contains(RegExp(r'[0-9]'))) {
-      throw FormatException('Name cannot contain numbers.');
+    if (_hasNumbers(name)) {
+      throw const FormatException('Name cannot contain numbers.');
     }
   }
 
   void _updateText() {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        try {
-          _validateName(_nameController.text);
-          int.parse(_ageController.text);
-          _displayText =
-              'Given Name: ${_nameController.text}\nGiven Age: ${_ageController.text}';
-          _nameController.clear();
-          _ageController.clear();
+      try {
+        _validateName(_nameController.text);
+        final age = int.parse(_ageController.text);
+        final name = _nameController.text;
+        
+        _nameController.removeListener(_onTextChanged);
+        _ageController.removeListener(_onTextChanged);
+        
+        _nameController.clear();
+        _ageController.clear();
+        
+        _nameController.addListener(_onTextChanged);
+        _ageController.addListener(_onTextChanged);
 
-          _clearTimer?.cancel();
-          _clearTimer = Timer(const Duration(seconds: 8), () {
+        setState(() {
+          _displayText = 'Given Name: $name\nGiven Age: $age';
+        });
+
+        _clearTimer?.cancel();
+        _clearTimer = Timer(const Duration(seconds: 8), () {
+          if (mounted) {
             setState(() {
               _displayText = '';
             });
-          });
+          }
+        });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Data submitted successfully'),
-              duration: Duration(seconds: 4),
-            ),
-          );
-        } on FormatException catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please enter a valid number'),
-              duration: Duration(seconds: 4),
-            ),
-          );
-        }
-      });
+        _showSnackBar('Data submitted successfully');
+      } on FormatException {
+        _showSnackBar('Please enter a valid number', isError: true);
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill all fields'),
-          duration: Duration(seconds: 4),
-        ),
-      );
+      _showSnackBar('Please fill all fields', isError: true);
     }
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 4),
+        backgroundColor: isError ? Colors.red : null,
+      ),
+    );
   }
 
   @override
@@ -164,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your name';
                           }
-                          if (value.contains(RegExp(r'[0-9]'))) {
+                          if (_hasNumbers(value)) {
                             return 'Name cannot contain numbers';
                           }
                           return null;
