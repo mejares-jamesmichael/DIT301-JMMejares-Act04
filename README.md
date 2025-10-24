@@ -1,10 +1,10 @@
 # Event Practice App
 
-This Flutter application serves as a practical demonstration of event handling, state management, and user input validation. The user interface is designed to be clean and intuitive, ensuring a smooth user experience.
+This Flutter application serves as a practical demonstration of event handling, state management, and user input validation. This also serves as the fourh activity for Mobile App Dev
 
 ## Reflection
 
-### How Event Handling for User Actions Was Implemented
+### How did you implement event handling for user interactions?
 
 Event handling in this application is primarily managed through `TextEditingController` listeners and the `onPressed` callback of the `ElevatedButton`.
 
@@ -12,7 +12,7 @@ Event handling in this application is primarily managed through `TextEditingCont
 
 - **Button Clicks:** The `onPressed` callback on the `ElevatedButton` triggers the `_updateText` function, which validates the form, processes the user input, and updates the UI to display the submitted data.
 
-### Techniques for Smooth and Stable Interaction
+### What techniques ensured smooth and stable interaction?
 
 Several techniques were employed to ensure a stable and responsive user experience:
 
@@ -24,7 +24,7 @@ Several techniques were employed to ensure a stable and responsive user experien
 
 - **User Feedback:** `SnackBar` messages are used to provide non-intrusive feedback to the user, confirming successful submissions or alerting them to errors.
 
-### Future Improvements
+### What improvemetns would you add in future versions?
 
 While the application is functional and demonstrates core concepts effectively, there are several areas where it could be improved in future versions:
 
